@@ -35,6 +35,11 @@ SCENES: dict[str, Scene] = {
             "{name}”—and tells you to keep the light burning so the ships can find "
             "safe passage. Beyond the lantern, the sea folds itself around the rocks."
         ),
+        "weather_lines": {
+            "calm": "The sea is quiet tonight; keep the light steady, and every ship will find its way home.",
+            "grey": "A low sky gathers over the coast; the light will guide every ship safely through it.",
+            "storm": "The wind is rising against the windows; hold the light true, and the ships will find safe passage.",
+        },
         "choices": [
             {
                 "label": "Tend the lamp and obey the Narrator",

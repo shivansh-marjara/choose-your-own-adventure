@@ -21,6 +21,19 @@ Play it more than once and things start to change.
 - The game **remembers you**: it saves your name and your last ending, and greets returning players differently
 - A `rich` + `pyfiglet` terminal layer — banner, panels, an animated storm, a pulsing lamp, an ASCII bell
 
+## The light reads the real sky
+
+KEEPER calls the free **[Open-Meteo](https://open-meteo.com/)** public API — no API key
+required — to fetch the current weather for a city you type when the game starts.
+
+- If it's genuinely stormy there, the game opens **mid-storm**, the sea is already
+  in peril, and the Narrator taunts you about the real weather.
+- The wind speed, temperature and daylight are woven into the Narrator's opening line.
+- **Offline-safe:** if there's no network, or the city isn't found, the game runs
+  exactly like before — it never crashes without internet.
+
+Built with GitHub Copilot for GHW: Open Source Week.
+
 ## Requirements
 
 - Python 3.10+

@@ -6,6 +6,7 @@ from rich.prompt import Prompt
 
 import story
 import ui
+import weather
 
 
 SAVE_FILE = "keeper_save.json"
@@ -84,7 +85,7 @@ def _apply_flags(state, flags):
             state["inventory"].add(flag)
 
 
-def _show_entry_effects(scene_id, state, animations=True):
+def _show_entry_effects(scene_id, state, animations=True, skip_storm=False):
     effects = {
         "storm": lambda: ui.storm(),
         "lamp": lambda: ui.lamp(),
@@ -92,6 +93,8 @@ def _show_entry_effects(scene_id, state, animations=True):
     }
     for effect in story.SCENES[scene_id]["on_enter"]:
         if effect in effects:
+            if effect == "storm" and skip_storm:
+                continue
             if not animations:
                 continue
             if effect not in {"bell"} and ui.console.width < 40:
@@ -139,6 +142,19 @@ def play(debug=False, typewriter=False):
         ui.say(f"It has been {meta['nights']} nights. You came back, {meta['name']}.")
         ui.say(_ending_narration(meta["last_ending"]))
 
+    try:
+        place = Prompt.ask(
+            "Which coast should the light watch? (a city, or Enter to skip)",
+            default="",
+        ).strip()
+        sky = (
+            weather.sky_for(place)
+            if place
+            else {"mood": "calm", "line": None, "place": None, "raw": None}
+        )
+    except Exception:
+        sky = {"mood": "calm", "line": None, "place": None, "raw": None}
+
     ui.show_banner("KEEPER")
 
     while True:
@@ -147,7 +163,10 @@ def play(debug=False, typewriter=False):
             "inventory": set(),
             "current": "start",
             "remember_count": 0,
+            "weather": sky,
         }
+        if sky["mood"] == "storm":
+            state["flags"].add("real_storm")
         entering_scene = True
 
         while True:
@@ -166,7 +185,17 @@ def play(debug=False, typewriter=False):
 
             scene = story.SCENES[current]
             if entering_scene:
-                _show_entry_effects(current, state, animations=not debug)
+                is_weather_storm = current == "start" and sky["mood"] == "storm"
+                if current == "start" and sky["line"] is not None:
+                    if is_weather_storm:
+                        ui.storm()
+                    ui.say(sky["line"])
+                _show_entry_effects(
+                    current,
+                    state,
+                    animations=not debug,
+                    skip_storm=is_weather_storm,
+                )
                 entering_scene = False
 
             body = scene["body"].replace("{name}", meta["name"])

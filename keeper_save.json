@@ -1,0 +1,10 @@
+{
+  "name": "joe",
+  "nights": 1,
+  "last_ending": "end_faithful",
+  "endings_seen": [
+    "end_faithful",
+    "end_remembered",
+    "end_faithful"
+  ]
+}
